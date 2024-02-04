@@ -82,44 +82,39 @@ def build(
     Args:
         skip_wheel: Whether to skip building the Python wheel. Defaults to False.
     """
+    if not is_windows() and not is_linux():
+        raise OSError(f"Unsupported platform {platform()}.")
+
     command = [resolve_executable_path("cmake")]
     if cmake_generator:
         command += ["-G", cmake_generator]
-    build_wheel = "OFF" if skip_wheel else "ON"
-    if is_windows():
-        if not cmake_generator:
-            command += ["-G", "Visual Studio 17 2022"]
-        command += ["-S", ".", "-B", "build", f"-DBUILD_WHEEL={build_wheel}"]
-        run_subprocess(command).check_returncode()
-        make_command = ["cmake", "--build", ".", "--config", "Release"]
-        run_subprocess(make_command, cwd="build").check_returncode()
-    elif is_linux():
-        cuda_arch = 80
-        cuda_compiler = None
-        env = {}
-        if cuda_home or os.environ.get("CUDA_HOME"):
-            env["CUDA_HOME"] = cuda_home if cuda_home else os.environ.get("CUDA_HOME")
-            cuda_compiler = f"{env['CUDA_HOME']}/bin/nvcc"
-        if cudnn_home or os.environ.get("CUDNN_HOME"):
-            env["CUDNN_HOME"] = cudnn_home if cudnn_home else os.environ.get("CUDNN_HOME")
+    if is_windows() and not cmake_generator:
+        command += ["-G", "Visual Studio 17 2022"]
 
-        command += [
+    build_wheel = "OFF" if skip_wheel else "ON"
+
+    command += [
             "-S",
             ".",
             "-B",
             "build",
-            f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch}",
-            f"-DCMAKE_CUDA_COMPILER={cuda_compiler}",
             "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
             "-DUSE_CXX17=ON",
             "-DUSE_CUDA=ON",
             f"-DBUILD_WHEEL={build_wheel}",
         ]
-        run_subprocess(command, env=env).check_returncode()
-        make_command = ["make"]
-        run_subprocess(make_command, cwd="build", env=env).check_returncode()
-    else:
-        raise OSError(f"Unsupported platform {platform()}.")
+    
+    cuda_compiler = None
+    env = {}
+    if cuda_home or os.environ.get("CUDA_HOME"):
+        env["CUDA_HOME"] = cuda_home if cuda_home else os.environ.get("CUDA_HOME")
+        cuda_compiler = os.path.join({env['CUDA_HOME']}, "bin", "nvcc")
+        command += [f"-DCMAKE_CUDA_COMPILER={cuda_compiler}"]
+    if cudnn_home or os.environ.get("CUDNN_HOME"):
+        env["CUDNN_HOME"] = cudnn_home if cudnn_home else os.environ.get("CUDNN_HOME")
+    run_subprocess(command).check_returncode()
+    make_command = ["cmake", "--build", ".", "--config", "Release"]
+    run_subprocess(make_command, cwd="build").check_returncode()
 
 
 if __name__ == "__main__":
