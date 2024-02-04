@@ -107,9 +107,11 @@ def build(
     cuda_compiler = None
     env = {}
     if cuda_home or os.environ.get("CUDA_HOME"):
+        cuda_arch = 80
         env["CUDA_HOME"] = cuda_home if cuda_home else os.environ.get("CUDA_HOME")
         cuda_compiler = os.path.join({env['CUDA_HOME']}, "bin", "nvcc")
-        command += [f"-DCMAKE_CUDA_COMPILER={cuda_compiler}"]
+        command += [f"-DCMAKE_CUDA_COMPILER={cuda_compiler}", f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch}"]
+
     if cudnn_home or os.environ.get("CUDNN_HOME"):
         env["CUDNN_HOME"] = cudnn_home if cudnn_home else os.environ.get("CUDNN_HOME")
     run_subprocess(command).check_returncode()
