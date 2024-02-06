@@ -36,20 +36,13 @@ jobs:
       - name: Build with CMake and GCC
         run: |
           set -e -x
-          mkdir build
-          cd build
-          cmake -G "Unix Makefiles" .. -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=OFF
-          cmake --build . --config Release --parallel
-          cd ..
+          python build.py --cmake_generator "Unix Makefiles"
           rm -rf build
 
       - name: Build with CMake and clang
         run: |
           set -e -x
-          mkdir build
-          cd build
-          CC=clang CXX=clang++ cmake -G "Unix Makefiles" .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_CLANG_TIDY=clang-tidy -DUSE_CUDA=OFF
-          cmake --build . --config Release --parallel
+          CC=clang CXX=clang++ python build.py --cmake_generator "Unix Makefiles"
 
 
       - name: Verify Build Artifacts
