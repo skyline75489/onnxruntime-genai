@@ -261,7 +261,7 @@ struct PyGeneratorParams {
           SetSearchNumber(params_->search, name, entry.second.cast<int>());
         } else
           throw std::runtime_error("Unknown search option type, can be float/bool/int:" + name);
-      } catch (JSON::unknown_value_error& e) {
+      } catch (JSON::unknown_value_error&) {
         throw std::runtime_error("Unknown search option:" + name);
       }
     }
@@ -288,7 +288,7 @@ struct PyGenerator {
     return ToPython(py_tokens_.GetCPU());
   }
 
-  pybind11::array_t<int32_t> GetSequence(int index) {
+  pybind11::array_t<int32_t> GetSequence(size_t index) {
     py_sequence_.Assign(generator_->search_->GetSequence(index));
     return ToPython(py_sequence_.GetCPU());
   }
@@ -327,7 +327,7 @@ void SetLogOptions(const pybind11::kwargs& dict) {
         SetLogString(name, entry.second.cast<std::string>());
       } else
         throw std::runtime_error("Unknown log option type, can be bool/string:" + name);
-    } catch (JSON::unknown_value_error& e) {
+    } catch (JSON::unknown_value_error&) {
       throw std::runtime_error("Unknown log option:" + name);
     }
   }
