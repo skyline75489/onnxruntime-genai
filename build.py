@@ -128,6 +128,8 @@ def _parse_args():
 
     parser.add_argument("--use_dml", action="store_true", help="Whether to use DML. Default is to not use DML.")
 
+    parser.add_argument("--use_coreml", action="store_true", help="Build with CoreML support.")
+
     # The following options are mutually exclusive (cross compiling options such as android, ios, etc.)
     platform_group = parser.add_mutually_exclusive_group()
     platform_group.add_argument("--android", action="store_true", help="Build for Android")
@@ -463,6 +465,7 @@ def update(args: argparse.Namespace, env: dict[str, str]):
         f"-DUSE_CUDA={'ON' if args.use_cuda else 'OFF'}",
         f"-DUSE_ROCM={'ON' if args.use_rocm else 'OFF'}",
         f"-DUSE_DML={'ON' if args.use_dml else 'OFF'}",
+        f"-DUSE_COREML={'ON' if args.use_coreml else 'OFF'}",
         f"-DENABLE_JAVA={'ON' if args.build_java else 'OFF'}",
         f"-DBUILD_WHEEL={build_wheel}",
     ]

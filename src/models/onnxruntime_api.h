@@ -71,6 +71,10 @@ p_session_->Run(nullptr, input_names, inputs, std::size(inputs), output_names, o
 #include <array>
 
 #include "onnxruntime_c_api.h"
+#ifdef USE_COREML
+#include "coreml_provider_factory.h"
+#endif
+
 #include "../span.h"
 #include "../logging.h"
 #include "env_utils.h"
@@ -593,6 +597,9 @@ struct OrtSessionOptions {
   /// Wraps OrtApi::SessionOptionsAppendExecutionProvider. Currently supports SNPE and XNNPACK.
   OrtSessionOptions& AppendExecutionProvider(const std::string& provider_name,
                                              const std::unordered_map<std::string, std::string>& provider_options = {});
+#ifdef USE_COREML
+  OrtSessionOptions& AppendExecutionProvider_CoreML(int coreml_flags);
+#endif
 
   OrtSessionOptions& SetCustomCreateThreadFn(OrtCustomCreateThreadFn ort_custom_create_thread_fn);  ///< Wraps OrtApi::SessionOptionsSetCustomCreateThreadFn
   OrtSessionOptions& SetCustomThreadCreationOptions(void* ort_custom_thread_creation_options);      ///< Wraps OrtApi::SessionOptionsSetCustomThreadCreationOptions

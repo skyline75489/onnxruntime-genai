@@ -30,6 +30,8 @@ include(cmake/check_cuda.cmake)
 include(cmake/check_rocm.cmake)
 # Checking if DML is supported
 include(cmake/check_dml.cmake)
+# CoreML related
+include(cmake/check_coreml.cmake)
 
 include(cmake/cxx_standard.cmake)
 

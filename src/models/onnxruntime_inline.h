@@ -658,6 +658,13 @@ inline OrtSessionOptions& OrtSessionOptions::AppendExecutionProvider(
   return *this;
 }
 
+#ifdef USE_COREML
+inline OrtSessionOptions& OrtSessionOptions::AppendExecutionProvider_CoreML(int coreml_flags) {
+  Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_CoreML(this, coreml_flags));
+  return *this;
+}
+#endif
+
 inline OrtSessionOptions& OrtSessionOptions::SetCustomCreateThreadFn(OrtCustomCreateThreadFn ort_custom_create_thread_fn) {
   Ort::ThrowOnError(Ort::api->SessionOptionsSetCustomCreateThreadFn(this, ort_custom_create_thread_fn));
   return *this;
